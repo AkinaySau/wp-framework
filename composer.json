@@ -1,0 +1,25 @@
+{
+	"name": "sau/wp-framework",
+	"description": "Framework for fast dev plugin and template",
+	"minimum-stability": "stable",
+	"license": "proprietary",
+	"authors": [
+		{
+			"name": "Akinay Sau",
+			"email": "akinay.sau@gmail.com",
+			"homepage": "http://a-sau.ru",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"symfony/filesystem": "4.2.*",
+		"symfony/dotenv": "^4.2",
+		"filp/whoops": "^2.3",
+		"symfony/dependency-injection": "^4.2"
+	},
+	"autoload": {
+		"psr-4": {
+			"Sau\\WP\\Framework\\": "src/"
+		}
+	}
+}
