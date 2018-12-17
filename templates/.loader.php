@@ -63,28 +63,35 @@ if ( ! is_array($sau_kernels)) {
 }
 ###
 
-#if not admin oly boot kernel
-if (defined('WP_ADMIN') && WP_ADMIN === true) {
-    $kernel->boot();
-} else { # else run find response
-    $response = $kernel->handle($request);
-    #find controller and response
-    if ($response instanceof Response && ! $response->isNotFound()) {
-        $response->send();
-        $kernel->terminate($request, $response);
-    } else {
-        ob_start();
-        add_action('shutdown', function () use ($kernel, $request) {
-            $content = ob_get_contents();
-            ob_end_clean();
-            $response = new Response();
-            $response->setContent($content);
+add_action('init',function ()use ($name,$kernel){
+    do_action($name,$kernel);
+});
+
+add_action('init', function () use ($kernel, $request) {
+    #if not admin oly boot kernel
+    if (defined('WP_ADMIN') && WP_ADMIN === true) {
+        $kernel->boot();
+    } else { # else run find response
+        $response = $kernel->handle($request);
+        #find controller and response
+        if ($response instanceof Response && ! $response->isNotFound()) {
             $response->send();
             $kernel->terminate($request, $response);
-        }, 0, 99);
+        } else {
+            ob_start();
+            add_action('shutdown', function () use ($kernel, $request) {
+                $content = ob_get_contents();
+                ob_end_clean();
+                $response = new Response();
+                $response->setContent($content);
+                $response->send();
+                $kernel->terminate($request, $response);
+            }, 0, 99);
+        }
     }
-}
 
-#end loader
+    #end loader
+}, 0, 99);
+
 
 

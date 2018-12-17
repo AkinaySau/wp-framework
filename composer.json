@@ -14,7 +14,6 @@
 	"require": {
 		"symfony/filesystem": "4.2.*",
 		"symfony/dotenv": "^4.2",
-		"filp/whoops": "^2.3",
 		"symfony/dependency-injection": "^4.2",
 		"symfony/http-kernel": "^4.2",
 		"symfony/framework-bundle": "^4.2",
