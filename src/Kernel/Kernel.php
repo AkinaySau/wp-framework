@@ -11,8 +11,12 @@
 namespace Sau\WP\Framework\Kernel;
 
 
-use Sau\WP\Framework\Bundle\Bundle;
-use Sau\WP\Framework\Exception\BaseException;
+use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
+use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\Config\Resource\FileResource;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
+use Symfony\Component\Routing\RouteCollectionBuilder;
 
 /**
  * Class Kernel
@@ -25,101 +29,69 @@ use Sau\WP\Framework\Exception\BaseException;
  *          5) work wp
  * @package Sau\WP\Framework\Kernel
  */
-class Kernel
+class Kernel extends \Symfony\Component\HttpKernel\Kernel
 {
+    use MicroKernelTrait;
 
-    private   $container;
-    private   $projectDir;
-    protected $environment;
-    protected $debug;
+    const CONFIG_EXTS = '.{php,xml,yaml,yml}';
 
     /**
-     * Kernel constructor.
-     * @throws BaseException
-     */
-    public function __construct(string $env, bool $debug)
-    {
-        $this->environment = $env;
-        $this->debug       = $debug;
-
-        $this->boot();
-    }
-
-    private function boot()
-    {
-
-        add_action('init', function () {
-            $this->bootInit();
-        });
-    }
-
-    /**
-     * @throws BaseException
-     */
-    private function bootInit()
-    {
-
-        $packs = apply_filters('sf_add_packages', []);
-        if ( ! is_array($packs)) {
-            throw new BaseException(sprintf('Invalid pack collection need array, return %s', gettype($packs)));
-        }
-
-
-        foreach ($packs as $key => $pack) {
-            if (class_exists($key) && $class = new $key instanceof Bundle) {
-
-            }
-        }
-
-
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getContainer()
-    {
-        return $this->container;
-    }
-
-
-    /**
-     * Gets the application root dir (path of the project's composer file).
+     * Returns an array of bundles to register.
      *
-     * @return string The project root dir
+     * @return iterable|BundleInterface[] An iterable of bundle instances
      */
-    public function getProjectDir()
+    public function registerBundles()
     {
-        if (null === $this->projectDir) {
-            $r   = new \ReflectionObject($this);
-            $dir = $rootDir = \dirname($r->getFileName());
-            while ( ! file_exists($dir.'/composer.json')) {
-                if ($dir === \dirname($dir)) {
-                    return $this->projectDir = $rootDir;
-                }
-                $dir = \dirname($dir);
+        $contents = require $this->getProjectDir().'/config/bundles.php';
+        foreach ($contents as $class => $envs) {
+            if (isset($envs[ 'all' ]) || isset($envs[ $this->environment ])) {
+                yield new $class();
             }
-            $this->projectDir = $dir;
         }
+    }
 
-        return $this->projectDir;
+    public function getCacheDir()
+    {
+        return $this->getProjectDir().'/var/cache/'.$this->environment;
+    }
+
+    public function getLogDir()
+    {
+        return $this->getProjectDir().'/var/log';
     }
 
     /**
-     * @return string
+     * @param ContainerBuilder $container
+     * @param LoaderInterface  $loader
+     *
+     * @throws \Exception
      */
-    public function getEnvironment(): string
+    protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader)
     {
-        return $this->environment;
+        $container->addResource(new FileResource($this->getProjectDir().'/config/bundles.php'));
+        // Feel free to remove the "container.autowiring.strict_mode" parameter
+        // if you are using symfony/dependency-injection 4.0+ as it's the default behavior
+        $container->setParameter('container.autowiring.strict_mode', true);
+        $container->setParameter('container.dumper.inline_class_loader', true);
+        $confDir = $this->getProjectDir().'/config';
+
+        $loader->load($confDir.'/{packages}/*'.self::CONFIG_EXTS, 'glob');
+        $loader->load($confDir.'/{packages}/'.$this->environment.'/**/*'.self::CONFIG_EXTS, 'glob');
+        $loader->load($confDir.'/{services}'.self::CONFIG_EXTS, 'glob');
+        $loader->load($confDir.'/{services}_'.$this->environment.self::CONFIG_EXTS, 'glob');
     }
 
     /**
-     * @return bool
+     * @param RouteCollectionBuilder $routes
+     *
+     * @throws \Symfony\Component\Config\Exception\LoaderLoadException
      */
-    public function isDebug(): bool
+    protected function configureRoutes(RouteCollectionBuilder $routes)
     {
-        return $this->debug;
+        $confDir = $this->getProjectDir().'/config';
+
+        $routes->import($confDir.'/{routes}/*'.self::CONFIG_EXTS, '/', 'glob');
+        $routes->import($confDir.'/{routes}/'.$this->environment.'/**/*'.self::CONFIG_EXTS, '/', 'glob');
+        $routes->import($confDir.'/{routes}'.self::CONFIG_EXTS, '/', 'glob');
     }
-
-
 }

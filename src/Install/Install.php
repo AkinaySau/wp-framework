@@ -30,6 +30,9 @@ class Install
         $fs   = new Filesystem();
         static::copyLoader($path, $fs);
         static::copyEnv($path, $fs);
+        static::copyConfig($path, $fs);
+        static::copyTemplates($path, $fs);
+
         if ($mu) {
             static::muLoader($path, $fs);
         }
@@ -44,7 +47,6 @@ class Install
         $defines = static::getPathToDefines($path);
         if ( ! $fs->exists($defines)) {
             $fs->copy(static::getPathTemplate().'/.defines.php', $defines);
-
         }
     }
 
@@ -56,6 +58,22 @@ class Install
             $fs->copy(static::getPathTemplate().'/.env.dist', $env);
         }
 
+    }
+
+    static protected function copyConfig($path, Filesystem $fs)
+    {
+        $config = realpath($path).'/config/';
+        if ( ! $fs->exists($config)) {
+            $fs->mirror(static::getPathTemplate().'/config', $config);
+        }
+    }
+
+    static public function copyTemplates($path, Filesystem $fs)
+    {
+        $templates = realpath($path).'/templates/';
+        if ( ! $fs->exists($templates)) {
+            $fs->mirror(static::getPathTemplate().'/templates', $templates);
+        }
     }
 
     public static function muLoader(string $path, Filesystem $fs)
