@@ -2,6 +2,7 @@
 	"name": "sau/wp-framework",
 	"description": "Framework for fast dev plugin and template",
 	"minimum-stability": "stable",
+	"version": "1.0.0",
 	"license": "proprietary",
 	"authors": [
 		{
