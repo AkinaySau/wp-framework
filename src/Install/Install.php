@@ -41,10 +41,10 @@ class Install
         if ( ! $fs->exists($loader)) {
             $fs->copy(static::getPathTemplate().'/.loader.php', $loader);
         }
-        $defines = $path."/.defines.php";
-        if ( ! $fs->exists($path."/.defines.php")) {
-            $fs->touch($defines);
-            $fs->appendToFile($path.'/.defines.php', '<?php');
+        $defines = static::getPathToDefines($path);
+        if ( ! $fs->exists($defines)) {
+            $fs->copy(static::getPathTemplate().'/.defines.php', $defines);
+
         }
     }
 

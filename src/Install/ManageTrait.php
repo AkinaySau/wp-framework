@@ -36,6 +36,18 @@ trait ManageTrait
     }
 
     /**
+     * Get path to define file
+     *
+     * @param $path
+     *
+     * @return string
+     */
+    static protected function getPathToDefines($path)
+    {
+        return realpath($path).'/.defines.php';
+    }
+
+    /**
      * Get path to MU loader file
      *
      * @param $name
