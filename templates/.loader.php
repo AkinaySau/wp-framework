@@ -27,6 +27,16 @@ if ( ! file_exists($path_to_env)) {
 (new Dotenv())->load($path_to_env);
 ###end load env###
 
+$env = $_SERVER['APP_ENV'] ?? 'dev';
+$debug = (bool) ($_SERVER['APP_DEBUG'] ?? ('prod' !== $env));
 
+if ($debug) {
+    umask(0000);
+
+    $whoops = new \Whoops\Run;
+    $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+    $whoops->register();
+//    Debug::enable();
+}
 
 $kernel = new class($env,$debug) extends Kernel{};
