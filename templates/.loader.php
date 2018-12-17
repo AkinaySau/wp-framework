@@ -11,8 +11,11 @@
 use Sau\WP\Framework\Kernel\Kernel;
 use Symfony\Component\Dotenv\Dotenv;
 
+#start loader
+
 require_once __DIR__.'/vendor/autoload.php';
 require_once __DIR__.'/.defines.php';
+
 ###Create env###
 $path_to_env = ABSPATH.'.env';
 if ( ! file_exists($path_to_env)) {
@@ -39,4 +42,8 @@ if ($debug) {
 //    Debug::enable();
 }
 
+#use antonym class for get right path to project
 $kernel = new class($env,$debug) extends Kernel{};
+
+
+#end loader
