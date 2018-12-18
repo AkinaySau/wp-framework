@@ -63,14 +63,19 @@ if ( ! is_array($sau_kernels)) {
 }
 ###
 
-add_action('init',function ()use ($name,$kernel){
-    do_action($name,$kernel);
+add_action('after_setup_theme', function () use ($kernel, $name) {
+    $kernel->boot();
+});
+
+
+add_action('init', function () use ($name, $kernel) {
+    do_action($name, $kernel);
 });
 
 add_action('init', function () use ($kernel, $request) {
     #if not admin oly boot kernel
     if (defined('WP_ADMIN') && WP_ADMIN === true) {
-        $kernel->boot();
+        #adminpanel
     } else { # else run find response
         $response = $kernel->handle($request);
         #find controller and response

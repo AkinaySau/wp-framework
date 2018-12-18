@@ -16,11 +16,16 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class CarbonBundle extends Bundle
 {
+    public function boot()
+    {
+        if ($this->container->has('carbon')) {
+            $this->container->get('carbon');
+        }
+    }
+
     public function build(ContainerBuilder $container)
     {
-        //        add_action('after_setup_theme', function () {
-        \Carbon_Fields\Carbon_Fields::boot();
-        //        });
+
         parent::build($container);
 
         $container->addCompilerPass(new CarbonPass());
