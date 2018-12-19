@@ -13,7 +13,8 @@ use Carbon_Fields\Container;
 
 abstract class AbstractContainer implements ContainerInterface
 {
-    protected $container;
+    static protected $init = false;
+    protected        $container;
 
     /**
      * Container constructor.
@@ -28,10 +29,22 @@ abstract class AbstractContainer implements ContainerInterface
 
     private function init()
     {
+        if (static::$init) {
+            return;
+        }
+        static::$init    = true;
         $this->container = Container::make($this->getType(), $this->getTitle());
         $this->addFields();
     }
 
     abstract protected function addFields();
+
+    /**
+     * @return mixed
+     */
+    public function getInit()
+    {
+        return static::$init;
+    }
 
 }
