@@ -9,6 +9,7 @@
  */
 
 use Sau\WP\Framework\Kernel\Kernel;
+use Symfony\Component\Debug\Debug;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,7 +44,7 @@ if ($debug) {
     //    $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
     //    $whoops->register();
 
-    //    Debug::enable();
+    Debug::enable();
 }
 ##################################
 #use antonym class for get right path to project
@@ -63,40 +64,42 @@ if ( ! is_array($sau_kernels)) {
 }
 ###
 
-add_action('after_setup_theme', function () use ($kernel, $name) {
-    $kernel->boot();
-});
+add_action('after_setup_theme', function () use ($kernel, $request, $name) {
+    /**
+     * Before kernel is boot
+     */
+    do_action('before_boot_'.$name, $kernel);
 
+    $response = $kernel->handle($request);
 
-add_action('init', function () use ($name, $kernel) {
-    do_action($name, $kernel);
-});
+    /**
+     * After kernel is boot
+     */
+    do_action('after_boot_'.$name, $kernel);
+    /**
+     * For modify response
+     */
+    do_action('response_'.$name, $response);
 
-add_action('init', function () use ($kernel, $request) {
-    #if not admin oly boot kernel
-    if (defined('WP_ADMIN') && WP_ADMIN === true) {
-        #adminpanel
-    } else { # else run find response
-        $response = $kernel->handle($request);
-        #find controller and response
-        if ($response instanceof Response && ! $response->isNotFound()) {
+    #find controller and response
+    if ($response instanceof Response && ! $response->isNotFound()) {
+        $response->send();
+        $kernel->terminate($request, $response);
+    } else {
+        ob_start();
+        add_action('shutdown', function () use ($kernel, $request) {
+            $content = ob_get_contents();
+            ob_end_clean();
+            $response = new Response();
+            $response->setContent($content);
             $response->send();
             $kernel->terminate($request, $response);
-        } else {
-            ob_start();
-            add_action('shutdown', function () use ($kernel, $request) {
-                $content = ob_get_contents();
-                ob_end_clean();
-                $response = new Response();
-                $response->setContent($content);
-                $response->send();
-                $kernel->terminate($request, $response);
-            }, 0, 99);
-        }
+        }, 0, 99);
     }
+    //    }
 
-    #end loader
-}, 0, 99);
+}, 0, 0);
 
+#end loader
 
 
