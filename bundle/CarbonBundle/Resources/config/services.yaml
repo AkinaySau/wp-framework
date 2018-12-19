@@ -1,0 +1,6 @@
+# Create AkinaySau(akinaysau@gmail.com)
+services:
+    Sau\WP\Framework\Bundle\CarbonBundle\Carbon\ContainerChain: ~
+    carbon:
+        alias: Sau\WP\Framework\Bundle\CarbonBundle\Carbon\ContainerChain
+        public: true

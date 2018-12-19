@@ -55,15 +55,17 @@ Base extend it's [Bundle](https://symfony.com/doc/current/bundles.html)
 If using base infrastructure use as symfony flex application
 
 ### Action
-If need extent plugin in theme, isset action 
-```php
-use Sau\WP\Framework\Kernel\Kernel;
+If need extent plugin use actions: 
 
-//___name___ its name plugin/template  
-add_action("___name___",function(Kernel $kernel){
-    #...your code
-})
-```
+```do_action('before_boot_'.$name, $kernel);``` - before kernel load
+
+```do_action('after_boot_'.$name, $kernel);``` - after get response object (load kernel)
+
+```do_action('response_'.$name, $response);``` - after get response object. Use for modify response in framework
+
+```do_action('wp_response_'.$name, $response);``` - after create WP response (if route not found)
+
+**!!!** Kernel load in action ***after_setup_theme*** in priority 99.
 
 ## Use in wp template
 If you need use kernel in your code: 

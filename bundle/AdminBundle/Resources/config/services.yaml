@@ -1,0 +1,7 @@
+# Create AkinaySau(akinaysau@gmail.com)
+services:
+    Sau\WP\Framework\Bundle\AdminBundle\Admin\CollectionAdmin: ~
+    admin:
+        alias: Sau\WP\Framework\Bundle\AdminBundle\Admin\CollectionAdmin
+        public: true
+#        lazy: false
