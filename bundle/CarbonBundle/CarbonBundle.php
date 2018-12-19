@@ -10,6 +10,7 @@
 
 namespace Sau\WP\Framework\Bundle\CarbonBundle;
 
+use Carbon_Fields\Carbon_Fields;
 use Sau\WP\Framework\Bundle\CarbonBundle\DependencyInjection\Compiler\CarbonPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -18,6 +19,7 @@ class CarbonBundle extends Bundle
 {
     public function boot()
     {
+        Carbon_Fields::boot();
         if ($this->container->has('carbon')) {
             $this->container->get('carbon');
         }
