@@ -1,0 +1,11 @@
+# Create AkinaySau(akinaysau@gmail.com)
+services:
+    Sau\WP\Framework\Bundle\ThemeBundle\Registration\:
+        resource: '../../Registration/*'
+        tags: ['theme.registration_services']
+        arguments:
+            - '@Sau\WP\Framework\Bundle\ThemeBundle\Configuration'
+    Sau\WP\Framework\Bundle\ThemeBundle\Loader\RegistrationLoader: ~
+    theme.registration_loader:
+        alias: Sau\WP\Framework\Bundle\ThemeBundle\Loader\RegistrationLoader
+        public: true

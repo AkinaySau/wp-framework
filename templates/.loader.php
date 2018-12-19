@@ -8,6 +8,8 @@
  * @package wp-framework
  */
 
+use Sau\WP\Framework\Event\LoadEvent;
+use Sau\WP\Framework\Event\RegisterActionsEvent;
 use Sau\WP\Framework\Kernel\Kernel;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\Dotenv\Dotenv;
@@ -71,6 +73,14 @@ add_action('after_setup_theme', function () use ($kernel, $request, $name) {
     do_action('before_boot_'.$name, $kernel);
 
     $response = $kernel->handle($request);
+
+    //for fast load actions
+    if ($kernel->getContainer()
+               ->has('event_dispatcher')) {
+        $kernel->getContainer()
+               ->get('event_dispatcher')
+               ->dispatch(RegisterActionsEvent::NAME, new RegisterActionsEvent());
+    }
 
     /**
      * After kernel is boot

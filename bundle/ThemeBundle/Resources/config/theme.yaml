@@ -1,0 +1,6 @@
+# Create AkinaySau(akinaysau@gmail.com)
+theme:
+    menu:
+        - {slug: 'header', title: 'Главное меню'}
+    image_preview:
+        - {}
