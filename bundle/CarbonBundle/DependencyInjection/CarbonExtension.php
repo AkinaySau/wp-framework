@@ -29,11 +29,9 @@ class CarbonExtension extends Extension
     public function load(array $configs, ContainerBuilder $container)
     {
         $container->registerForAutoconfiguration(ContainerInterface::class)
-                  ->addTag('carbon.register');
+                  ->addTag('carbon.container');
 
         $loader = new YamlFileLoader($container, new FileLocator(\dirname(__DIR__).'/Resources/config'));
-
         $loader->load('services.yaml');
-
     }
 }

@@ -1,6 +1,7 @@
 # Create AkinaySau(akinaysau@gmail.com)
 services:
-    Sau\WP\Framework\Bundle\CarbonBundle\Carbon\ContainerChain: ~
-    carbon:
-        alias: Sau\WP\Framework\Bundle\CarbonBundle\Carbon\ContainerChain
+    Sau\WP\Framework\Bundle\CarbonBundle\Twig\:
+        resource: '../../Twig/*'
+    carbon.container_loader:
+        class: Sau\WP\Framework\Bundle\CarbonBundle\Loader\CarbonLoader
         public: true

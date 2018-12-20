@@ -20,8 +20,9 @@ class CarbonBundle extends Bundle
     public function boot()
     {
         Carbon_Fields::boot();
-        if ($this->container->has('carbon')) {
-            $this->container->get('carbon');
+        if ($this->container->has('carbon.container_loader')) {
+            $this->container->get('carbon.container_loader')
+                            ->load();
         }
     }
 

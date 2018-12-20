@@ -11,7 +11,6 @@
 namespace Sau\WP\Framework\Bundle\CarbonBundle\DependencyInjection\Compiler;
 
 
-use Sau\WP\Framework\Bundle\CarbonBundle\Carbon\ContainerChain;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Compiler\PriorityTaggedServiceTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -26,17 +25,13 @@ class CarbonPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-
-        if ( ! $container->has(ContainerChain::class)) {
+        if ( ! $container->has('carbon.container_loader')) {
             return;
         }
-
-        $definition = $container->findDefinition(ContainerChain::class);
-
-        $taggedServices = $container->findTaggedServiceIds('carbon.register');
-
+        $definition     = $container->findDefinition('carbon.container_loader');
+        $taggedServices = $container->findTaggedServiceIds('carbon.container');
         foreach ($taggedServices as $id => $tags) {
-            $definition->addMethodCall('addContainer', array(new Reference($id)));
+            $definition->addMethodCall('add', [new Reference($id)]);
         }
     }
 }
