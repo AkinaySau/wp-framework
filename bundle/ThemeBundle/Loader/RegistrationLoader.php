@@ -16,7 +16,7 @@ use Sau\WP\Framework\Bundle\ThemeBundle\Registration\RegistrationInterface;
 
 class RegistrationLoader
 {
-    protected $collection;
+    protected $collection=[];
 
     /**
      * @return RegistrationInterface[]

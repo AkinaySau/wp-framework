@@ -50,14 +50,40 @@ class Configuration implements ConfigurationInterface
     private function addThumbnailSection(ArrayNodeDefinition $rootNode)
     {
         $rootNode->children()
-                     ->arrayNode('menu')
+                     ->arrayNode('thumbnail')
                          ->arrayPrototype()
                              ->children()
-                                 ->scalarNode('name')->isRequired()->end()
+                                 ->scalarNode('name')
+                                    ->isRequired()
+                                    ->validate()
+                                        ->ifTrue(function ($var){return !is_string($var);})
+                                        ->thenInvalid('"name" is not string')
+                                    ->end()
+                                 ->end()
                                  ->integerNode('width')->isRequired()->end()
                                  ->integerNode('height')->isRequired()->end()
-                                 ->booleanNode('crop')->end()
-                                 ->scalarNode('media_manager')->validate()->end()
+                                 ->variableNode('crop')
+                                    ->defaultValue(false)
+                                    ->validate()
+                                        ->ifTrue(function ($val){
+                                            if (is_bool($val)){
+                                                return false;
+                                            }
+                                            if (is_array($val) && array_key_exists(['x','y'],$val)){
+                                                return false;
+                                            }
+                                            return true;
+                                        })
+                                        ->thenInvalid('"crops" maybe only bool or array([x=100, y=100])')
+                                    ->end()
+                                 ->end()
+                                 ->scalarNode('media_manager')
+                                    ->defaultFalse()
+                                    ->validate()
+                                        ->ifTrue(function ($var){return !is_string($var);})
+                                        ->thenInvalid('"media_manager" is not string')
+                                    ->end()
+                                 ->end()
                              ->end()
                          ->end()
                      ->end();

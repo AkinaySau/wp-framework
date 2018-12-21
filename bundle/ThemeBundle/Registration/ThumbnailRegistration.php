@@ -20,12 +20,17 @@ class ThumbnailRegistration implements RegistrationInterface
      */
     public function registration(Configuration $configuration)
     {
-        if (is_array($thumbnail = $configuration->getConfig('thumbnail'))) {
-            $items = [];
-            foreach ($thumbnail as $i) {
-                $items[ $i[ 'slug' ] ] = $i[ 'title' ];
+        add_theme_support( 'post-thumbnails' );
+        if (is_array($thumbnails = $configuration->getConfig('thumbnail'))) {
+            foreach ($thumbnails as $thumbnail) {
+                add_image_size($thumbnail[ 'name' ], $thumbnail[ 'width' ], $thumbnail[ 'height' ],
+                    $thumbnail[ 'crop' ]);
+                if ($thumbnail[ 'media_manager' ]) {
+                    add_filter('image_size_names_choose', function ($sizes) use ($thumbnail) {
+                        return array_merge($sizes, [$thumbnail[ 'name' ] => $thumbnail[ 'media_manager' ]]);
+                    });
+                }
             }
-            register_nav_menus($items);
         }
     }
 }
