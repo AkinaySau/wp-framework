@@ -87,6 +87,5 @@ class Configuration implements ConfigurationInterface
                              ->end()
                          ->end()
                      ->end();
-//        $name, $width, $height, $crop = false, $media_manager = false
     }
 }
